@@ -10,16 +10,6 @@ from shadertest.shader_parser import (
 
 
 @pytest.fixture
-def no_arg_function():
-    return Function(
-        'function',
-        'float',
-        [],
-        'float function () { return 1.0; }'
-    )
-
-
-@pytest.fixture
 def no_arg_shader(no_arg_function):
     return build(no_arg_function)
 
@@ -44,4 +34,4 @@ def assert_shader(shader, function):
 def test_no_arg(no_arg_shader, no_arg_function):
     assert_shader(no_arg_shader, no_arg_function)
     assert f'{no_arg_function.name}()' in no_arg_shader
-    assert 'uniform image1D result' in  no_arg_shader
+    assert 'uniform imageBuffer result' in  no_arg_shader

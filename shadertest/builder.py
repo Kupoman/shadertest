@@ -3,7 +3,7 @@ def build_version(function):
 
 
 def build_output_uniform(function):
-    return 'layout(r32f) uniform image1D result;'
+    return 'layout(r32f) uniform imageBuffer result;'
 
 
 def build_call(function):
