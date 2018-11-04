@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 import re
 from typing import List
+from dataclasses import dataclass
 
 
 FUNCTION_REGEX = re.compile(

@@ -1,8 +1,8 @@
-def build_version(function):
+def build_version():
     return '#version 420'
 
 
-def build_output_uniform(function):
+def build_output_uniform():
     return 'layout(r32f) uniform imageBuffer result;'
 
 
@@ -20,8 +20,8 @@ def build_main(function):
 
 def build(function):
     shader = '\n'.join([
-        build_version(function),
-        build_output_uniform(function),
+        build_version(),
+        build_output_uniform(),
         function.text,
         build_main(function),
     ])

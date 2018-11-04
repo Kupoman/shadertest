@@ -58,7 +58,15 @@ class ShaderFunction:
     def bind(self):
         gl.glBindVertexArray(self.gl_vao)
         gl.glUseProgram(self.gl_program)
-        gl.glBindImageTexture(0, self.gl_return_texture, 0, gl.GL_FALSE, 0, gl.GL_WRITE_ONLY, gl.GL_R32F)
+        gl.glBindImageTexture(
+            0,
+            self.gl_return_texture,
+            0,
+            gl.GL_FALSE,
+            0,
+            gl.GL_WRITE_ONLY,
+            gl.GL_R32F
+        )
         gl.glUniform1i(0, 0)
 
     def draw(self):
