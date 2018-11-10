@@ -28,3 +28,8 @@ def test_one_arg(graphics_context, one_arg_function):
     with pytest.raises(TypeError):
         shader_function(1, 2)
     assert shader_function(5) == 10
+
+def test_two_arg(graphics_context, two_arg_function):
+    shader_function = ShaderFunction(two_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function(4, 2) == 6

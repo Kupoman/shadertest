@@ -22,7 +22,20 @@ def one_arg_function():
         'function',
         'float',
         [
-            Argument('float', 'a')
+            Argument('float', 'a'),
         ],
         'float function (float a) { return a * 2.0; }'
+    )
+
+
+@pytest.fixture
+def two_arg_function():
+    return Function(
+        'function',
+        'float',
+        [
+            Argument('float', 'a'),
+            Argument('float', 'b'),
+        ],
+        'float function (float a, float b) { return a + b; }'
     )

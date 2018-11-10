@@ -17,6 +17,10 @@ def no_arg_shader(no_arg_function):
 def one_arg_shader(one_arg_function):
     return build(one_arg_function)
 
+@pytest.fixture
+def two_arg_shader(two_arg_function):
+    return build(two_arg_function)
+
 
 def assert_shader(shader, function):
     echo_proc = subprocess.Popen(('echo', shader), stdout=subprocess.PIPE)
@@ -40,6 +44,13 @@ def test_no_arg(no_arg_shader, no_arg_function):
     assert f'{no_arg_function.name}()' in no_arg_shader
     assert 'uniform imageBuffer result' in  no_arg_shader
 
+
 def test_one_arg(one_arg_shader, one_arg_function):
     assert_shader(one_arg_shader, one_arg_function)
     assert 'uniform float a' in one_arg_shader
+
+
+def test_two_arg(two_arg_shader, two_arg_function):
+    assert_shader(two_arg_shader, two_arg_function)
+    assert 'uniform float a' in two_arg_shader
+    assert 'uniform float b' in two_arg_shader
