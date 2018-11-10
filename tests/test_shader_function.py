@@ -9,16 +9,19 @@ def graphics_context():
     with GraphicsContext() as context:
         yield context
 
+
 def assert_gl_state(shader_function):
     assert shader_function.gl_program != 0
     assert shader_function.gl_return_buffer != 0
     assert shader_function.gl_return_texture != 0
     assert shader_function.gl_vao != 0
 
+
 def test_no_args(graphics_context, no_arg_function):
     shader_function = ShaderFunction(no_arg_function)
     assert_gl_state(shader_function)
     assert shader_function() == 1.0
+
 
 def test_one_arg(graphics_context, one_arg_function):
     shader_function = ShaderFunction(one_arg_function)
@@ -29,7 +32,21 @@ def test_one_arg(graphics_context, one_arg_function):
         shader_function(1, 2)
     assert shader_function(5) == 10
 
+
 def test_two_arg(graphics_context, two_arg_function):
     shader_function = ShaderFunction(two_arg_function)
     assert_gl_state(shader_function)
     assert shader_function(4, 2) == 6
+
+
+def test_int_arg(graphics_context, int_arg_function):
+    shader_function = ShaderFunction(int_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function(3) == 1
+
+
+def test_bool_arg(graphics_context, bool_arg_function):
+    shader_function = ShaderFunction(bool_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function(True) == 1.0
+    assert shader_function(False) == 0.0

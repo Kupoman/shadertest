@@ -21,6 +21,14 @@ def one_arg_shader(one_arg_function):
 def two_arg_shader(two_arg_function):
     return build(two_arg_function)
 
+@pytest.fixture
+def int_arg_shader(int_arg_function):
+    return build(int_arg_function)
+
+@pytest.fixture
+def bool_arg_shader(bool_arg_function):
+    return build(bool_arg_function)
+
 
 def assert_shader(shader, function):
     echo_proc = subprocess.Popen(('echo', shader), stdout=subprocess.PIPE)
@@ -54,3 +62,13 @@ def test_two_arg(two_arg_shader, two_arg_function):
     assert_shader(two_arg_shader, two_arg_function)
     assert 'uniform float a' in two_arg_shader
     assert 'uniform float b' in two_arg_shader
+
+
+def test_int_arg(int_arg_shader, int_arg_function):
+    assert_shader(int_arg_shader, int_arg_function)
+    assert 'uniform int a' in int_arg_shader
+
+
+def test_bool_arg(bool_arg_shader, bool_arg_function):
+    assert_shader(bool_arg_shader, bool_arg_function)
+    assert 'uniform bool a' in bool_arg_shader

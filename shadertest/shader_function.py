@@ -13,6 +13,12 @@ void main() {
 }
 '''
 
+UNIFORM_MAP = {
+    'float': gl.glUniform1f,
+    'int': gl.glUniform1i,
+    'bool': gl.glUniform1i,
+}
+
 class ShaderFunction:
     def __init__(self, function_data):
         self.function_data = function_data
@@ -74,8 +80,8 @@ class ShaderFunction:
             gl.GL_R32F
         )
         gl.glUniform1i(0, 0)
-        for i, value in enumerate(args):
-            gl.glUniform1f(i + 1, value)
+        for i, (arg, value) in enumerate(zip(self.function_data.args, args)):
+            UNIFORM_MAP[arg.type](i + 1, value)
 
     def draw(self):
         gl.glDrawArrays(gl.GL_POINTS, 0, 1)
