@@ -2,12 +2,20 @@ def build_version():
     return '#version 420'
 
 
-def build_output_uniform():
-    return 'layout(r32f) uniform imageBuffer result;'
+def build_output_uniforms(function):
+    out_uniform = 'layout(r32f) uniform imageBuffer result;'
+    arg_uniforms = [f'uniform {arg.type} {arg.name};' for arg in function.args]
+
+    return '\n'.join((out_uniform, *arg_uniforms))
+
+
+def build_args(function):
+    return ', '.join([arg.name for arg in function.args])
 
 
 def build_call(function):
-    return f'imageStore(result, 0, vec4({function.name}(), vec3(0.0)));'
+    args = build_args(function)
+    return f'imageStore(result, 0, vec4({function.name}({args}), vec3(0.0)));'
 
 
 def build_main(function):
@@ -21,7 +29,7 @@ def build_main(function):
 def build(function):
     shader = '\n'.join([
         build_version(),
-        build_output_uniform(),
+        build_output_uniforms(function),
         function.text,
         build_main(function),
     ])

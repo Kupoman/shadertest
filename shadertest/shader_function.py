@@ -48,14 +48,20 @@ class ShaderFunction:
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, 0)
         return texture
 
-    def __call__(self):
-        self.bind()
+    def __call__(self, *args):
+        takes = len(self.function_data.args)
+        given = len(args)
+        if given != takes:
+            name = self.function_data.name
+            raise TypeError(f'{name} takes {takes} positional argument but {given} were given')
+
+        self.bind(args)
         self.draw()
         rvalue = self.read_return_buffer()
         self.unbind()
         return rvalue
 
-    def bind(self):
+    def bind(self, args):
         gl.glBindVertexArray(self.gl_vao)
         gl.glUseProgram(self.gl_program)
         gl.glBindImageTexture(
@@ -68,6 +74,8 @@ class ShaderFunction:
             gl.GL_R32F
         )
         gl.glUniform1i(0, 0)
+        for i, value in enumerate(args):
+            gl.glUniform1f(i + 1, value)
 
     def draw(self):
         gl.glDrawArrays(gl.GL_POINTS, 0, 1)
