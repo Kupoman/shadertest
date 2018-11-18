@@ -3,6 +3,10 @@ import pytest
 
 from shadertest.shader_function import ShaderFunction
 from shadertest.graphics_context import GraphicsContext
+from shadertest.shader_parser import (
+    Argument,
+    Function,
+)
 
 @pytest.fixture(scope='module')
 def graphics_context():
@@ -70,55 +74,64 @@ def test_bool_arg(graphics_context, bool_arg_function):
     assert shader_function(False) == 0.0
 
 
-def test_vec2_arg(graphics_context, vec2_arg_function):
-    shader_function = ShaderFunction(vec2_arg_function)
+def build_vec_type(base_type, size):
+    vec_map = {
+        'float': 'vec',
+        'double': 'dvec',
+        'int': 'ivec',
+        'uint': 'uvec',
+        'bool': 'bvec',
+    }
+    return f'{vec_map[base_type]}{size}'
+
+def build_sum_function(base_type, size):
+    vec_type = build_vec_type(base_type, size)
+    if base_type == 'bool':
+        sum_expr = 'any(a)'
+    else:
+        sum_expr = ' + '.join([f'a[{i}]' for i in range(size)])
+    function_data = Function(
+        'sum',
+        base_type,
+        [Argument(vec_type, 'a')],
+        f'{base_type} sum ({vec_type} a) {{ return {sum_expr}; }}'
+    )
+    return ShaderFunction(function_data)
+
+
+@pytest.mark.parametrize('size', [2, 3, 4])
+@pytest.mark.parametrize('base_type', ['float', 'int', 'bool'])
+def test_gvec_arg(graphics_context, base_type, size):
+    shader_function = build_sum_function(base_type, size)
     assert_gl_state(shader_function)
-    assert shader_function((1, 2)) == 3
+    if base_type == 'bool':
+        arg = (True,) * size
+        expect = True
+    else:
+        arg = range(size)
+        expect = sum(arg)
+    assert shader_function(arg) == expect
 
 
-def test_vec3_arg(graphics_context, vec3_arg_function):
-    shader_function = ShaderFunction(vec3_arg_function)
+def build_spread_function(base_type, size):
+    vec_type = build_vec_type(base_type, size)
+    function_data = Function(
+        'spread',
+        vec_type,
+        [Argument(base_type, 'a')],
+        f'{vec_type} spread ({base_type} a) {{ return {vec_type}(a); }}'
+    )
+    return ShaderFunction(function_data)
+
+
+@pytest.mark.parametrize('size', [2, 3, 4])
+@pytest.mark.parametrize('base_type', ['float', 'int', 'bool'])
+def test_gvec_return(graphics_context, base_type, size):
+    shader_function = build_spread_function(base_type, size)
     assert_gl_state(shader_function)
-    assert shader_function((1, 2, 3)) == 6
-
-
-def test_vec4_arg(graphics_context, vec4_arg_function):
-    shader_function = ShaderFunction(vec4_arg_function)
-    assert_gl_state(shader_function)
-    assert shader_function((1, 2, 3, 4)) == 10
-
-
-def test_ivec2_arg(graphics_context, ivec2_arg_function):
-    shader_function = ShaderFunction(ivec2_arg_function)
-    assert_gl_state(shader_function)
-    assert shader_function((1, 2)) == 3
-
-
-def test_ivec3_arg(graphics_context, ivec3_arg_function):
-    shader_function = ShaderFunction(ivec3_arg_function)
-    assert_gl_state(shader_function)
-    assert shader_function((1, 2, 3)) == 6
-
-
-def test_ivec4_arg(graphics_context, ivec4_arg_function):
-    shader_function = ShaderFunction(ivec4_arg_function)
-    assert_gl_state(shader_function)
-    assert shader_function((1, 2, 3, 4)) == 10
-
-
-def test_bvec2_arg(graphics_context, bvec2_arg_function):
-    shader_function = ShaderFunction(bvec2_arg_function)
-    assert_gl_state(shader_function)
-    assert shader_function((False, True)) == True
-
-
-def test_bvec3_arg(graphics_context, bvec3_arg_function):
-    shader_function = ShaderFunction(bvec3_arg_function)
-    assert_gl_state(shader_function)
-    assert shader_function((False, False, True)) == True
-
-
-def test_bvec4_arg(graphics_context, bvec4_arg_function):
-    shader_function = ShaderFunction(bvec4_arg_function)
-    assert_gl_state(shader_function)
-    assert shader_function((False, False, False, True)) == True
+    arg = {
+        'float': 42.0,
+        'int': 42,
+        'bool': True,
+    }[base_type]
+    assert shader_function(arg) == (arg,) * size

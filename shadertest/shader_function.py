@@ -79,7 +79,7 @@ class ShaderFunction:
             gl.GL_FALSE,
             0,
             gl.GL_WRITE_ONLY,
-            gl.GL_R32F
+            TYPE_MAP[self.function_data.return_type]['buffer_type']
         )
         gl.glUniform1i(0, 0)
         for i, (arg, value) in enumerate(zip(self.function_data.args, args)):
@@ -104,7 +104,13 @@ class ShaderFunction:
         if self.function_data.return_type == 'bool':
             return bool(host_buffer.value)
 
-        return host_buffer.value
+        if hasattr(host_buffer, 'value'):
+            return host_buffer.value
+
+        if self.function_data.return_type.endswith('3'):
+            host_buffer = host_buffer[:3]
+
+        return tuple(host_buffer)
 
     def unbind(self):
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, 0)
