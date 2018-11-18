@@ -30,7 +30,25 @@ def test_one_arg(graphics_context, one_arg_function):
         shader_function()
     with pytest.raises(TypeError):
         shader_function(1, 2)
-    assert shader_function(5) == 10
+    return_value = shader_function(5)
+    assert return_value == 10
+    assert type(return_value) == float
+
+
+def test_int_return(graphics_context, int_return_function):
+    shader_function = ShaderFunction(int_return_function)
+    assert_gl_state(shader_function)
+    return_value = shader_function()
+    assert return_value == 1
+    assert type(return_value) == int
+
+
+def test_bool_return(graphics_context, bool_return_function):
+    shader_function = ShaderFunction(bool_return_function)
+    assert_gl_state(shader_function)
+    return_value = shader_function()
+    assert return_value == True
+    assert type(return_value) == bool
 
 
 def test_two_arg(graphics_context, two_arg_function):

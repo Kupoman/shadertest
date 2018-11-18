@@ -1,9 +1,14 @@
+from .type_map import TYPE_MAP
+
+
 def build_version():
     return '#version 420'
 
 
 def build_output_uniforms(function):
-    out_uniform = 'layout(r32f) uniform imageBuffer result;'
+    layout = TYPE_MAP[function.return_type]['shader_layout']
+    buffer_type = TYPE_MAP[function.return_type]['shader_buffer']
+    out_uniform = f'layout({layout}) uniform {buffer_type} result;'
     arg_uniforms = [f'uniform {arg.type} {arg.name};' for arg in function.args]
 
     return '\n'.join((out_uniform, *arg_uniforms))
@@ -15,7 +20,7 @@ def build_args(function):
 
 def build_call(function):
     args = build_args(function)
-    return f'imageStore(result, 0, vec4({function.name}({args}), vec3(0.0)));'
+    return TYPE_MAP[function.return_type]['shader_store'](function.name, args)
 
 
 def build_main(function):

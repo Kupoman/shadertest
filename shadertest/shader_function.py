@@ -4,6 +4,7 @@ import OpenGL.GL as gl
 from OpenGL.GL import shaders
 
 from . import builder
+from .type_map import TYPE_MAP
 
 
 VERTEX_SOURCE = '''
@@ -13,11 +14,6 @@ void main() {
 }
 '''
 
-UNIFORM_MAP = {
-    'float': gl.glUniform1f,
-    'int': gl.glUniform1i,
-    'bool': gl.glUniform1i,
-}
 
 class ShaderFunction:
     def __init__(self, function_data):
@@ -42,15 +38,21 @@ class ShaderFunction:
     def create_gl_buffer(self):
         buffer = gl.glGenBuffers(1)
         gl.glBindBuffer(gl.GL_TEXTURE_BUFFER, buffer)
-        host_buffer = ctypes.c_float(10)
-        gl.glBufferData(gl.GL_TEXTURE_BUFFER, 4, ctypes.byref(host_buffer), gl.GL_STREAM_READ)
+        host_buffer = TYPE_MAP[self.function_data.return_type]['ctype']()
+        gl.glBufferData(
+            gl.GL_TEXTURE_BUFFER,
+            ctypes.sizeof(host_buffer),
+            ctypes.byref(host_buffer),
+            gl.GL_STREAM_READ
+        )
         gl.glBindBuffer(gl.GL_TEXTURE_BUFFER, 0)
         return buffer
 
     def create_gl_buffer_texture(self, buffer):
         texture = gl.glGenTextures(1)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, texture)
-        gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, gl.GL_R32F, buffer)
+        buffer_type = TYPE_MAP[self.function_data.return_type]['buffer_type']
+        gl.glTexBuffer(gl.GL_TEXTURE_BUFFER, buffer_type, buffer)
         gl.glBindTexture(gl.GL_TEXTURE_BUFFER, 0)
         return texture
 
@@ -81,16 +83,25 @@ class ShaderFunction:
         )
         gl.glUniform1i(0, 0)
         for i, (arg, value) in enumerate(zip(self.function_data.args, args)):
-            UNIFORM_MAP[arg.type](i + 1, value)
+            TYPE_MAP[arg.type]['uniform'](i + 1, value)
 
     def draw(self):
         gl.glDrawArrays(gl.GL_POINTS, 0, 1)
 
     def read_return_buffer(self):
-        host_buffer = ctypes.c_float(42)
+        host_buffer = TYPE_MAP[self.function_data.return_type]['ctype']()
         gl.glBindBuffer(gl.GL_TEXTURE_BUFFER, self.gl_return_buffer)
-        gl.glGetBufferSubData(gl.GL_TEXTURE_BUFFER, 0, 4, ctypes.byref(host_buffer))
+        gl.glGetBufferSubData(
+            gl.GL_TEXTURE_BUFFER,
+            0,
+            ctypes.sizeof(host_buffer),
+            ctypes.byref(host_buffer)
+        )
         gl.glBindBuffer(gl.GL_TEXTURE_BUFFER, 0)
+
+        if self.function_data.return_type == 'bool':
+            return bool(host_buffer.value)
+
         return host_buffer.value
 
     def unbind(self):

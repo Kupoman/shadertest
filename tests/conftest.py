@@ -52,6 +52,7 @@ def int_arg_function():
         'float function (int a) { return a / 2; }'
     )
 
+
 @pytest.fixture
 def bool_arg_function():
     return Function(
@@ -61,4 +62,24 @@ def bool_arg_function():
             Argument('bool', 'a'),
         ],
         'float function (bool a) { return (a) ? 1.0 : 0.0; }'
+    )
+
+
+@pytest.fixture
+def bool_return_function():
+    return Function(
+        'function',
+        'bool',
+        [],
+        'bool function () { return true; }'
+    )
+
+
+@pytest.fixture
+def int_return_function():
+    return Function(
+        'function',
+        'int',
+        [],
+        'int function () { return 1; }'
     )
