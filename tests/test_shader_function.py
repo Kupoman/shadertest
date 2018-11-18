@@ -68,3 +68,57 @@ def test_bool_arg(graphics_context, bool_arg_function):
     assert_gl_state(shader_function)
     assert shader_function(True) == 1.0
     assert shader_function(False) == 0.0
+
+
+def test_vec2_arg(graphics_context, vec2_arg_function):
+    shader_function = ShaderFunction(vec2_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((1, 2)) == 3
+
+
+def test_vec3_arg(graphics_context, vec3_arg_function):
+    shader_function = ShaderFunction(vec3_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((1, 2, 3)) == 6
+
+
+def test_vec4_arg(graphics_context, vec4_arg_function):
+    shader_function = ShaderFunction(vec4_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((1, 2, 3, 4)) == 10
+
+
+def test_ivec2_arg(graphics_context, ivec2_arg_function):
+    shader_function = ShaderFunction(ivec2_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((1, 2)) == 3
+
+
+def test_ivec3_arg(graphics_context, ivec3_arg_function):
+    shader_function = ShaderFunction(ivec3_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((1, 2, 3)) == 6
+
+
+def test_ivec4_arg(graphics_context, ivec4_arg_function):
+    shader_function = ShaderFunction(ivec4_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((1, 2, 3, 4)) == 10
+
+
+def test_bvec2_arg(graphics_context, bvec2_arg_function):
+    shader_function = ShaderFunction(bvec2_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((False, True)) == True
+
+
+def test_bvec3_arg(graphics_context, bvec3_arg_function):
+    shader_function = ShaderFunction(bvec3_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((False, False, True)) == True
+
+
+def test_bvec4_arg(graphics_context, bvec4_arg_function):
+    shader_function = ShaderFunction(bvec4_arg_function)
+    assert_gl_state(shader_function)
+    assert shader_function((False, False, False, True)) == True

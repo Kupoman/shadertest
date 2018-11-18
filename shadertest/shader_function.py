@@ -1,4 +1,5 @@
 import ctypes
+import collections
 
 import OpenGL.GL as gl
 from OpenGL.GL import shaders
@@ -28,7 +29,6 @@ class ShaderFunction:
 
     def create_gl_program(self):
         shader_source = builder.build(self.function_data)
-        print(shader_source)
         shader = shaders.compileShader(shader_source, gl.GL_FRAGMENT_SHADER)
         vertex_shader = shaders.compileShader(VERTEX_SOURCE, gl.GL_VERTEX_SHADER)
         program = shaders.compileProgram(vertex_shader, shader)
@@ -83,7 +83,9 @@ class ShaderFunction:
         )
         gl.glUniform1i(0, 0)
         for i, (arg, value) in enumerate(zip(self.function_data.args, args)):
-            TYPE_MAP[arg.type]['uniform'](i + 1, value)
+            if not isinstance(value, collections.abc.Iterable):
+                value = (value,)
+            TYPE_MAP[arg.type]['uniform'](i + 1, *value)
 
     def draw(self):
         gl.glDrawArrays(gl.GL_POINTS, 0, 1)
