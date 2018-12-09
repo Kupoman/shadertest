@@ -32,3 +32,15 @@ def basic_shader():
 def test_add(basic_shader):
     assert basic_shader.add(4, 2) == 6
 ```
+
+## Supported data types
+The following data types are supported for return values and function arguments:
+* bool
+* int
+* uint
+* float
+* bvecn
+* ivecn
+* vecn
+
+For more information about GLSL data types, checkout the [Khronos wiki page](https://www.khronos.org/opengl/wiki/Data_Type_%28GLSL%29) on them.
