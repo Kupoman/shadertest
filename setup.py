@@ -6,11 +6,11 @@ def readme():
 
 setup(
     name='shadertest',
-    version='0.1.0',
+    version='0.2.1',
     author='Daniel Stokes',
     author_email='stokes.daniel.j@gmail.com',
     url='https://github.com/Kupoman/shadertest',
-    description='A pyhton library for unit testing GLSL functions',
+    description='A Python library for unit testing GLSL functions',
     long_description=readme(),
     long_description_content_type='text/markdown',
     classifiers=[
