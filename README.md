@@ -1,5 +1,5 @@
 # shadertest
-A pyhton library for unit testing GLSL functions
+A Python library for unit testing GLSL functions
 
 ## Example
 Below we have a very simple fragment shader called `add.frag`.
